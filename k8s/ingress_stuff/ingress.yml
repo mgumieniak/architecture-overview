@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  labels:
+    app: app
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: static-external-ip
+    networking.gke.io/v1beta1.FrontendConfig: fronted-config-for-ing
+    networking.gke.io/managed-certificates: MY_DOMAIN-mc
+    kubernetes.io/ingress.class: "gce"
+spec:
+  rules:
+    - host: MY_DOMAIN
+      http:
+        paths:
+        - path: /*
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: architecture
+              port:
+                number: 8080

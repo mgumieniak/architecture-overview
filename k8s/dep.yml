@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: architecture
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: architecture
+  template:
+    metadata:
+      labels:
+        app: architecture
+    spec:
+      containers:
+      - name: architecture
+        image: maciejgum/Arch:latest
+        imagePullPolicy: Always
+        envFrom:
+          - configMapRef:
+              name: architecture-env
+          - secretRef:
+              name: architecture-sec
+
+        resources:
+          limits:
+            {}
+
+        ports:
+        - containerPort: 8080
+
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 15
+
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 40
+          periodSeconds: 15
+          

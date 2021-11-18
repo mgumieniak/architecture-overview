@@ -1,0 +1,39 @@
+plugins {
+    id 'org.springframework.boot' version "${spring_boot_version}"
+    id 'com.google.cloud.tools.jib' version "${jib_version}"
+}
+
+dependencies {
+    // BOM
+    implementation platform("org.springframework.boot:spring-boot-dependencies:${spring_boot_version}")
+    implementation platform("org.springframework.cloud:spring-cloud-dependencies:${spring_cloud_version}")
+
+    // PROJECTS
+    implementation project(':architecture-models')
+    implementation "com.web:common-rest:${common_rest_version}"
+
+    //SPRING
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+
+    //KAFKA
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.apache.kafka:kafka-streams'
+    implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka-streams'
+
+
+
+    // TEST
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+}
+
+test {
+    useJUnitPlatform()
+}

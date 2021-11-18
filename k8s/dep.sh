@@ -1,0 +1,1 @@
+kubectl apply -f dep.yml -f env.yml -f svc.yml -f sec.yml
