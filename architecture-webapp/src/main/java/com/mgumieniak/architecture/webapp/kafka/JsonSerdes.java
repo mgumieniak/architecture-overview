@@ -1,4 +1,4 @@
-package com.mgumieniak.architecture.webapp.configs;
+package com.mgumieniak.architecture.webapp.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mgumieniak.architecture.models.Order;

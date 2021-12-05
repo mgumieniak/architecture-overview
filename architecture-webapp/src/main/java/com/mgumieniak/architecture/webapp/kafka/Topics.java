@@ -1,4 +1,4 @@
-package com.mgumieniak.architecture.webapp.configs;
+package com.mgumieniak.architecture.webapp.kafka;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;

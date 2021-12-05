@@ -4,8 +4,9 @@ import com.mgumieniak.architecture.models.Order;
 import com.mgumieniak.architecture.models.OrderState;
 import com.mgumieniak.architecture.models.OrderValidation;
 import com.mgumieniak.architecture.models.OrderValue;
-import com.mgumieniak.architecture.webapp.configs.OrderTimestampExtractor;
-import com.mgumieniak.architecture.webapp.configs.Topics;
+import com.mgumieniak.architecture.webapp.kafka.OrderTimestampExtractor;
+import com.mgumieniak.architecture.webapp.kafka.Topics;
+import com.mgumieniak.architecture.webapp.kafka.exception.processing.UncaughtExceptionHandler;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -15,7 +16,6 @@ import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.SessionStore;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +23,14 @@ import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.support.KafkaStreamBrancher;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.time.Duration;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.mgumieniak.architecture.models.OrderValidationResult.FAIL;
 import static com.mgumieniak.architecture.models.OrderValidationResult.PASS;
 import static com.mgumieniak.architecture.models.OrderValidationType.FRAUD_CHECK;
-import static com.mgumieniak.architecture.webapp.configs.Topics.ORDER_VALIDATIONS;
+import static com.mgumieniak.architecture.webapp.kafka.Topics.ORDER_VALIDATIONS;
 
 @Slf4j
 @Service
@@ -48,35 +47,22 @@ public class FraudService {
     private final Serde<OrderValue> orderValueSerde;
     private final Serde<OrderValidation> orderValidationSerde;
 
-    private final StreamsBuilderFactoryBean streamsBuilderFactoryBean;
-
-    private final static AtomicLong counter = new AtomicLong(2);
-
-
-//    public void test(){
-//        val store = streamsBuilderFactoryBean.getKafkaStreams().
-//                .store(SessionStoreBuilder);
-//    }
-
-
     @Autowired
     public void check(final @NonNull StreamsBuilder streamsBuilder) {
+        log.info("PROCESS ORDER !!!");
         val customerIdToCreatedOrder = getCreatedOrdersStream(streamsBuilder);
         log(customerIdToCreatedOrder);
         val windowedCustomerIdToOrderValue = createLatestOrderWithAggregatedSpent(customerIdToCreatedOrder);
         checkIsOrderFraudulent(windowedCustomerIdToOrderValue);
         latch(customerIdToCreatedOrder);
-
-        streamsBuilderFactoryBean.setUncaughtExceptionHandler();
-
     }
 
     @SneakyThrows
     private void latch(KStream<String, Order> customerIdToCreatedOrder) {
         customerIdToCreatedOrder.mapValues(order -> {
-            if(order.getPrice() == 10){
+            if (order.getPrice() == 10) {
                 throw new IllegalArgumentException();
-            }else {
+            } else {
                 return order;
             }
         });

@@ -1,25 +1,29 @@
-package com.mgumieniak.architecture.webapp.configs;
+package com.mgumieniak.architecture.webapp.kafka;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.mgumieniak.architecture.webapp.kafka.exception.processing.UncaughtExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.protocol.types.Field;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.errors.LogAndContinueExceptionHandler;
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.boot.autoconfigure.kafka.StreamsBuilderFactoryBeanCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.config.KafkaStreamsCustomizer;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.streams.RecoveringDeserializationExceptionHandler;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,9 +37,13 @@ import static org.apache.kafka.streams.StreamsConfig.EXACTLY_ONCE_V2;
 @RequiredArgsConstructor
 public class StreamConfig {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    @Qualifier("dlqDeserializationPublishingRecoverer")
+    private final DeadLetterPublishingRecoverer dlqDesPublishingRecoverer;
     private final KafkaProperties kafkaProperties;
+    private final UncaughtExceptionHandler uncaughtExceptionHandler;
 
+    @Value("${state-dir}")
+    private final String stateDir;
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     public KafkaStreamsConfiguration defaultKafkaStreamsConfig() {
@@ -47,18 +55,31 @@ public class StreamConfig {
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         props.put(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, WallclockTimestampExtractor.class.getName());
-        props.put(StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, LogAndContinueExceptionHandler.class);
+
+        props.put(StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, RecoveringDeserializationExceptionHandler.class);
+        props.put(RecoveringDeserializationExceptionHandler.KSTREAM_DESERIALIZATION_RECOVERER, dlqDesPublishingRecoverer);
+
+
         props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 5);
         props.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, EXACTLY_ONCE_V2);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        props.put(StreamsConfig.STATE_DIR_CONFIG, "/home/maciej/Public/Kafka/data");
+        props.put(StreamsConfig.STATE_DIR_CONFIG, stateDir);
 //        props.put(StreamsConfig.REPLICATION_FACTOR_CONFIG, 3);                         // TODO: change to 3 when nbBroker >= 3
 
         props.put(StreamsConfig.producerPrefix(ProducerConfig.ACKS_CONFIG), "all");
+
+        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "20000");
+        props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, "6000");
 
         return new KafkaStreamsConfiguration(props);
     }
 
 
-
+    @Bean
+    public StreamsBuilderFactoryBeanCustomizer streamsBuilderFactoryBeanCustomizer() {
+        return factoryBean -> factoryBean.
+                setKafkaStreamsCustomizer(
+                        kafkaStreams -> kafkaStreams.setUncaughtExceptionHandler(uncaughtExceptionHandler)
+                );
+    }
 }

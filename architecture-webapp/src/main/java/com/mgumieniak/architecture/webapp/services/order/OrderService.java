@@ -4,17 +4,19 @@ import com.mgumieniak.architecture.models.Order;
 import com.mgumieniak.architecture.models.OrderDTO;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.mgumieniak.architecture.models.OrderDTO.fromOrderDTO;
-import static com.mgumieniak.architecture.webapp.configs.Topics.ORDERS;
+import static com.mgumieniak.architecture.webapp.kafka.Topics.ORDERS;
 
 @Service
 @RequiredArgsConstructor
 public class OrderService {
 
+    @Qualifier("txKafkaTemplate")
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Transactional

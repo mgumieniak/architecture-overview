@@ -1,4 +1,4 @@
-package com.mgumieniak.architecture.webapp.configs;
+package com.mgumieniak.architecture.webapp.kafka;
 
 import com.mgumieniak.architecture.models.Timestamp;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

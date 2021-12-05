@@ -23,8 +23,6 @@ dependencies {
     //KAFKA
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.apache.kafka:kafka-streams'
-    implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka-streams'
-
 
 
     // TEST
