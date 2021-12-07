@@ -4,12 +4,9 @@ import com.mgumieniak.architecture.models.Order;
 import com.mgumieniak.architecture.models.OrderState;
 import com.mgumieniak.architecture.models.OrderValidation;
 import com.mgumieniak.architecture.models.OrderValue;
-import com.mgumieniak.architecture.webapp.kafka.OrderTimestampExtractor;
-import com.mgumieniak.architecture.webapp.kafka.Topics;
-import com.mgumieniak.architecture.webapp.kafka.exception.processing.UncaughtExceptionHandler;
+import com.mgumieniak.architecture.webapp.kafka.Topic;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.kafka.common.serialization.Serde;
@@ -19,18 +16,15 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.SessionStore;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.support.KafkaStreamBrancher;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.time.Duration;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static com.mgumieniak.architecture.models.OrderValidationResult.FAIL;
 import static com.mgumieniak.architecture.models.OrderValidationResult.PASS;
 import static com.mgumieniak.architecture.models.OrderValidationType.FRAUD_CHECK;
-import static com.mgumieniak.architecture.webapp.kafka.Topics.ORDER_VALIDATIONS;
+import static com.mgumieniak.architecture.webapp.kafka.Stores.DS_LATEST_ORDER_WITH_MONEY_SPENT;
 
 @Slf4j
 @Service
@@ -39,33 +33,20 @@ public class FraudService {
 
     private static final Duration INACTIVITY_GAP = Duration.ofHours(1);
     private static final Duration GRACE_PERIOD = Duration.ofMinutes(1);
-    public static final String DS_LATEST_ORDER_WITH_MONEY_SPENT = "latest-order-with-money-spent";
 
     private final FraudDetectionService fraudDetectionService;
-    private final OrderTimestampExtractor orderTimestampExtractor;
     private final Serde<Order> orderSerde;
     private final Serde<OrderValue> orderValueSerde;
-    private final Serde<OrderValidation> orderValidationSerde;
+
+    private final Topic<String, Order> orderTopic;
+    private final Topic<String, OrderValidation> orderValidationTopic;
 
     @Autowired
     public void check(final @NonNull StreamsBuilder streamsBuilder) {
-        log.info("PROCESS ORDER !!!");
         val customerIdToCreatedOrder = getCreatedOrdersStream(streamsBuilder);
         log(customerIdToCreatedOrder);
         val windowedCustomerIdToOrderValue = createLatestOrderWithAggregatedSpent(customerIdToCreatedOrder);
         checkIsOrderFraudulent(windowedCustomerIdToOrderValue);
-        latch(customerIdToCreatedOrder);
-    }
-
-    @SneakyThrows
-    private void latch(KStream<String, Order> customerIdToCreatedOrder) {
-        customerIdToCreatedOrder.mapValues(order -> {
-            if (order.getPrice() == 10) {
-                throw new IllegalArgumentException();
-            } else {
-                return order;
-            }
-        });
     }
 
     private void log(final KStream<String, Order> customerIdToCreatedOrderKS) {
@@ -75,13 +56,8 @@ public class FraudService {
 
     private KStream<String, Order> getCreatedOrdersStream(final @NonNull StreamsBuilder streamsBuilder) {
         return streamsBuilder
-                .stream(Topics.ORDERS, consumeOrders())
+                .stream(orderTopic.getName(), orderTopic.getConsumed())
                 .filter(((orderId, order) -> OrderState.CREATED.equals(order.getState())));
-    }
-
-    private Consumed<String, Order> consumeOrders() {
-        return Consumed.with(Serdes.String(), orderSerde)
-                .withTimestampExtractor(orderTimestampExtractor);
     }
 
     private KTable<Windowed<String>, OrderValue> createLatestOrderWithAggregatedSpent(final @NonNull KStream<String, Order> customerIdToCreatedOrderKS) {
@@ -115,11 +91,11 @@ public class FraudService {
                         (orderId, orderValues) -> fraudDetectionService.isMoneyLimitExceeded(orderValues),
                         kStream -> kStream.mapValues(orderValue ->
                                 new OrderValidation(orderValue.getOrder().getId(), FRAUD_CHECK, FAIL))
-                                .to(ORDER_VALIDATIONS, Produced.with(Serdes.String(), orderValidationSerde)))
+                                .to(orderValidationTopic.getName(), orderValidationTopic.getProduced()))
                 .branch((orderId, orderValues) -> fraudDetectionService.isMoneyBelowLimit(orderValues),
                         kStream -> kStream.mapValues(orderValue ->
                                 new OrderValidation(orderValue.getOrder().getId(), FRAUD_CHECK, PASS))
-                                .to(ORDER_VALIDATIONS, Produced.with(Serdes.String(), orderValidationSerde)))
+                                .to(orderValidationTopic.getName(), orderValidationTopic.getProduced()))
                 .onTopOf(customerIdToOrderValue);
     }
 }
