@@ -11,19 +11,14 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/orders")
 @RequiredArgsConstructor
-public class Controller {
+public class OrdersController {
 
 
     private final OrderService orderService;
 
     @PostMapping
-    public void submitOrder(final @NonNull @RequestBody @Valid OrderDTO order) {
-        orderService.submitOrder(order);
+    public void createOrder(final @NonNull @RequestBody @Valid OrderDTO order) {
+        orderService.createOrder(order);
     }
-
-//    @GetMapping()
-//    public void submitOrder(final @NonNull @RequestBody @Valid OrderBean order) {
-//        orderService.submitOrder(order);
-//    }
 
 }

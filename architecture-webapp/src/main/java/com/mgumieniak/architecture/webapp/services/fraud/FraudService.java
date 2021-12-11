@@ -43,15 +43,9 @@ public class FraudService {
 
     @Autowired
     public void check(final @NonNull StreamsBuilder streamsBuilder) {
-        val customerIdToCreatedOrder = getCreatedOrdersStream(streamsBuilder);
-        log(customerIdToCreatedOrder);
-        val windowedCustomerIdToOrderValue = createLatestOrderWithAggregatedSpent(customerIdToCreatedOrder);
+        val orderIdToCreatedOrder = getCreatedOrdersStream(streamsBuilder);
+        val windowedCustomerIdToOrderValue = createLatestOrderWithAggregatedSpent(orderIdToCreatedOrder);
         checkIsOrderFraudulent(windowedCustomerIdToOrderValue);
-    }
-
-    private void log(final KStream<String, Order> customerIdToCreatedOrderKS) {
-        customerIdToCreatedOrderKS
-                .peek((key, value) -> log.info("[FraudService] Created order key:{} value:{}", key, value.toString()));
     }
 
     private KStream<String, Order> getCreatedOrdersStream(final @NonNull StreamsBuilder streamsBuilder) {
@@ -60,9 +54,10 @@ public class FraudService {
                 .filter(((orderId, order) -> OrderState.CREATED.equals(order.getState())));
     }
 
-    private KTable<Windowed<String>, OrderValue> createLatestOrderWithAggregatedSpent(final @NonNull KStream<String, Order> customerIdToCreatedOrderKS) {
-        return customerIdToCreatedOrderKS
-                .groupByKey(Grouped.with(Serdes.String(), orderSerde))
+    private KTable<Windowed<String>, OrderValue> createLatestOrderWithAggregatedSpent(final @NonNull KStream<String, Order> orderIdToCreatedOrder) {
+        return orderIdToCreatedOrder
+                .groupBy((orderId, order) -> String.valueOf(order.getCustomerId()),
+                        Grouped.with(Serdes.String(), orderSerde))
                 .windowedBy(SessionWindows
                         .ofInactivityGapAndGrace(INACTIVITY_GAP, GRACE_PERIOD))
                 .aggregate(OrderValue::buildDef,
@@ -80,7 +75,7 @@ public class FraudService {
     }
 
     private void checkIsOrderFraudulent(final @NonNull KTable<Windowed<String>, OrderValue> windowedCustomerIdToOrderValue) {
-        final KStream<String, OrderValue> customerIdToOrderValue = windowedCustomerIdToOrderValue
+        final KStream<String, OrderValue> orderIdToOrderValue = windowedCustomerIdToOrderValue
                 .toStream((windowKey, orderValues) -> windowKey.key())
                 .filter((key, value) -> value != null)
                 .selectKey((id, orderValue) -> orderValue.getOrder().getId())
@@ -96,6 +91,6 @@ public class FraudService {
                         kStream -> kStream.mapValues(orderValue ->
                                 new OrderValidation(orderValue.getOrder().getId(), FRAUD_CHECK, PASS))
                                 .to(orderValidationTopic.getName(), orderValidationTopic.getProduced()))
-                .onTopOf(customerIdToOrderValue);
+                .onTopOf(orderIdToOrderValue);
     }
 }

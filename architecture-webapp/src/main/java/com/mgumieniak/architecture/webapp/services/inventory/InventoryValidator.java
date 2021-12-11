@@ -2,8 +2,9 @@ package com.mgumieniak.architecture.webapp.services.inventory;
 
 import com.mgumieniak.architecture.models.Order;
 import com.mgumieniak.architecture.models.OrderValidation;
-import com.mgumieniak.architecture.models.Product;
+import com.mgumieniak.architecture.models.products.Product;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
@@ -15,6 +16,7 @@ import static com.mgumieniak.architecture.models.OrderValidationResult.PASS;
 import static com.mgumieniak.architecture.models.OrderValidationType.INVENTORY_CHECK;
 import static com.mgumieniak.architecture.webapp.kafka.Stores.DS_RESERVED_STOCK_STORE_NAME;
 
+@Slf4j
 public class InventoryValidator implements Transformer<Product, KeyValue<Order, Integer>, KeyValue<String, OrderValidation>> {
 
     private KeyValueStore<Product, Long> reservedStocksStore;
@@ -31,6 +33,8 @@ public class InventoryValidator implements Transformer<Product, KeyValue<Order, 
         val stockAmountInWarehouse = orderAndStock.value;
         val reservedNbStocks = getReservedNbStocks(product);
 
+        log.info("LEFT: {}", stockAmountInWarehouse);
+        log.info("RESERVED: {}", reservedNbStocks);
         val orderValidation = validate(order, stockAmountInWarehouse, reservedNbStocks);
 
         return KeyValue.pair(orderValidation.getOrderId(), orderValidation);

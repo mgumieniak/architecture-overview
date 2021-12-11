@@ -1,6 +1,7 @@
 package com.mgumieniak.architecture.models;
 
 
+import com.mgumieniak.architecture.models.products.Product;
 import lombok.Builder;
 import lombok.Value;
 

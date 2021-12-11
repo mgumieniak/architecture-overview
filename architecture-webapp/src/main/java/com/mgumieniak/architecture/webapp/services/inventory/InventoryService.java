@@ -3,7 +3,7 @@ package com.mgumieniak.architecture.webapp.services.inventory;
 import com.mgumieniak.architecture.models.Order;
 import com.mgumieniak.architecture.models.OrderState;
 import com.mgumieniak.architecture.models.OrderValidation;
-import com.mgumieniak.architecture.models.Product;
+import com.mgumieniak.architecture.models.products.Product;
 import com.mgumieniak.architecture.webapp.kafka.Topic;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -41,15 +41,10 @@ public class InventoryService {
     @Autowired
     public void check(final @NonNull StreamsBuilder builder) {
         createProductToReservedStocks(builder);
-        val customerIdToCreatedOrder = builder
+        val productToOrder = builder
                 .stream(orderTopic.getName(), orderTopic.getConsumed())
                 .filter((customerId, order) -> order.getState() == OrderState.CREATED)
-                .peek((key, value) -> log.info("[customerIdToCreatedOrder] key: {}; value: {}", key, value));;
-
-
-        val productToOrder = customerIdToCreatedOrder
-                .selectKey((customerId, order) -> order.getProduct())
-                .peek((key, value) -> log.info("[productToOrder] key: {}; value: {}", key, value));
+                .selectKey((customerId, order) -> order.getProduct());
 
         val productToStockAmountInWarehouse = builder
                 .table(productTopic.getName(), productTopic.getConsumed());

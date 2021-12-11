@@ -2,7 +2,7 @@ package com.mgumieniak.architecture.webapp.kafka;
 
 import com.mgumieniak.architecture.models.Order;
 import com.mgumieniak.architecture.models.OrderValidation;
-import com.mgumieniak.architecture.models.Product;
+import com.mgumieniak.architecture.models.products.Product;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.serialization.Serde;
@@ -20,7 +20,7 @@ public class Topics {
     private static String ORDERS_ENRICHED = "orders-enriched";
     private static String PAYMENTS = "payments";
     private static String CUSTOMERS = "customers";
-    private static String WAREHOUSE_INVENTORY = "warehouse-inventory";
+    public static String WAREHOUSE_INVENTORY = "warehouse-inventory";
     public static String ORDER_VALIDATIONS = "order-validations";
 
     private final Serde<Order> orderSerde;
@@ -30,7 +30,7 @@ public class Topics {
     private final OrderTimestampExtractor orderTimestampExtractor;
 
     @Bean
-    public Topic<String, Order> createOrderTopic() {
+    public Topic<String, Order> createCustomerIdToOrderTopic() {
         return Topic.<String, Order>builder()
                 .name(ORDERS)
                 .vSerde(orderSerde)
@@ -48,8 +48,7 @@ public class Topics {
                 .vSerde(orderValidationSerde)
                 .produced(Produced.with(Serdes.String(), orderValidationSerde))
                 .consumed(
-                        Consumed.with(Serdes.String(), orderValidationSerde)
-                                .withTimestampExtractor(orderTimestampExtractor))
+                        Consumed.with(Serdes.String(), orderValidationSerde))
                 .build();
     }
 
@@ -60,9 +59,7 @@ public class Topics {
                 .kSerde(productSerde)
                 .vSerde(Serdes.Integer())
                 .produced(Produced.with(productSerde, Serdes.Integer()))
-                .consumed(
-                        Consumed.with(productSerde, Serdes.Integer())
-                                .withTimestampExtractor(orderTimestampExtractor))
+                .consumed(Consumed.with(productSerde, Serdes.Integer()))
                 .build();
     }
 

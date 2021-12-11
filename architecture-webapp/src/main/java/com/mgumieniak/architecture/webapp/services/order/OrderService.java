@@ -20,8 +20,9 @@ public class OrderService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Transactional
-    public void submitOrder(@NonNull final OrderDTO orderDTO) {
+    public void createOrder(@NonNull final OrderDTO orderDTO) {
         final Order order = fromOrderDTO(orderDTO);
-        kafkaTemplate.send(ORDERS, String.valueOf(order.getCustomerId()), order);
+        kafkaTemplate.send(ORDERS, String.valueOf(order.getId()), order);
     }
+
 }
