@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import static com.mgumieniak.architecture.webapp.kafka.Topics.WAREHOUSE_INVENTORY;
+import static com.mgumieniak.architecture.webapp.kafka.topics.Topics.WAREHOUSE_INVENTORY;
 
 @Slf4j
 @Service

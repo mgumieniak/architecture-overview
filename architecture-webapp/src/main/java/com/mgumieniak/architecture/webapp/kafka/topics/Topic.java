@@ -1,4 +1,4 @@
-package com.mgumieniak.architecture.webapp.kafka;
+package com.mgumieniak.architecture.webapp.kafka.topics;
 
 import lombok.Builder;
 import lombok.NonNull;

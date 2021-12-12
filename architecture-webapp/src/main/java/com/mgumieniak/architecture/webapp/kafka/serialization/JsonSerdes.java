@@ -1,21 +1,13 @@
-package com.mgumieniak.architecture.webapp.kafka;
+package com.mgumieniak.architecture.webapp.kafka.serialization;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mgumieniak.architecture.models.Order;
-import com.mgumieniak.architecture.models.OrderValidation;
-import com.mgumieniak.architecture.models.OrderValidationResults;
-import com.mgumieniak.architecture.models.OrderValue;
+import com.mgumieniak.architecture.models.*;
 import com.mgumieniak.architecture.models.products.Product;
 import lombok.AllArgsConstructor;
-import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.common.serialization.Serializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.support.serializer.JsonSerde;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 @Configuration
 @AllArgsConstructor
@@ -46,5 +38,20 @@ public class JsonSerdes {
     @Bean
     public Serde<Product> buildProductSerde() {
         return new ProductTypeSerde();
+    }
+
+    @Bean
+    public Serde<Payment> buildPaymentSerde() {
+        return new JsonSerde<>(Payment.class, mapper);
+    }
+
+    @Bean
+    public Serde<Email> buildEmailSerde() {
+        return new JsonSerde<>(Email.class, mapper);
+    }
+
+    @Bean
+    public Serde<Customer> buildCustomerSerde() {
+        return new JsonSerde<>(Customer.class, mapper);
     }
 }

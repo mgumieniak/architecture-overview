@@ -4,7 +4,7 @@ import com.mgumieniak.architecture.models.Order;
 import com.mgumieniak.architecture.models.OrderState;
 import com.mgumieniak.architecture.models.OrderValidation;
 import com.mgumieniak.architecture.models.OrderValidationResults;
-import com.mgumieniak.architecture.webapp.kafka.Topic;
+import com.mgumieniak.architecture.webapp.kafka.topics.Topic;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +27,9 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class ValidationsAggregatorService {
 
+    private static final Duration TIME_TO_ACCEPT_ALL_VALIDATIONS_FROM_CREATE_ORDER = Duration.ofHours(12);
+    private static final Duration TIME_DIFF_BETWEEN_VALIDATIONS = Duration.ofHours(1);
+
     private final Topic<String, OrderValidation> orderValidationTopic;
     private final Topic<String, Order> orderTopic;
     private final Serde<OrderValidationResults> validationResultsSerde;
@@ -43,7 +46,7 @@ public class ValidationsAggregatorService {
         val orderIdToValidationResults = orderIdToOrderValidation
                 .groupByKey()
                 .windowedBy(TimeWindows
-                        .ofSizeAndGrace(Duration.ofMinutes(1), Duration.ofSeconds(5))
+                        .ofSizeAndGrace(TIME_DIFF_BETWEEN_VALIDATIONS, Duration.ofSeconds(5))
                 )
                 .aggregate(
                         () -> OrderValidationResults.builder().build(),
@@ -62,7 +65,7 @@ public class ValidationsAggregatorService {
                         kStream -> kStream
                                 .join(orderIdToOrder,
                                         (validationResults, order) -> Order.changeState(order, OrderState.VALIDATED),
-                                        JoinWindows.of(Duration.ofDays(100)),
+                                        JoinWindows.of(TIME_TO_ACCEPT_ALL_VALIDATIONS_FROM_CREATE_ORDER),
                                         StreamJoined.with(Serdes.String(), validationResultsSerde, orderTopic.getVSerde())
                                 )
                                 .peek((key, value) -> log.info("[Order passed validation req] key: {} value: {}", key, value))

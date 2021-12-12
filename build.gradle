@@ -14,7 +14,6 @@ subprojects {
     }
 
     dependencies {
-        implementation "org.assertj:assertj-core:${assertj_version}"
         compileOnly "org.projectlombok:lombok:${lombok_version}"
 
         // mapper
@@ -23,11 +22,18 @@ subprojects {
 
         annotationProcessor "org.projectlombok:lombok:${lombok_version}"
 
-        //JACKSON ANNOTATION
+        // JACKSON
+        // ANNOTATION
         implementation "com.fasterxml.jackson.core:jackson-annotations:${jackson_annotations_version}"
+        // DATATYPE
+        testImplementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jackson_annotations_version}"
 
-        //JSR305
+
+        // JSR305
         implementation "com.google.code.findbugs:jsr305:${jsr305_version}"
+
+        // TESTS
+        testImplementation "org.assertj:assertj-core:${assertj_version}"
     }
 }
 

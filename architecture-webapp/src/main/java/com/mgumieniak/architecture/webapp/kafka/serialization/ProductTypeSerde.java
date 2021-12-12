@@ -1,4 +1,4 @@
-package com.mgumieniak.architecture.webapp.kafka;
+package com.mgumieniak.architecture.webapp.kafka.serialization;
 
 import com.mgumieniak.architecture.models.products.Product;
 import org.apache.kafka.common.serialization.Deserializer;

@@ -1,11 +1,8 @@
 package com.mgumieniak.architecture.webapp.kafka.producer;
 
-import com.mgumieniak.architecture.models.products.Product;
-import com.mgumieniak.architecture.webapp.kafka.serialization.ProductSerializer;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.IntegerSerializer;
-import org.apache.kafka.common.serialization.Serde;
+import org.apache.kafka.common.serialization.LongSerializer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,18 +15,15 @@ import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
-public class ProductProducer {
+public class CustomerProducer {
 
     private final KafkaProperties kafkaProperties;
 
-    private final Serde<Product> productSerde;
-
     @Bean
-    public Map<String, Object> productProducerConfigs() {
+    public Map<String, Object> customerProducerConfigs() {
         Map<String, Object> props =
                 new HashMap<>(kafkaProperties.buildProducerProperties());
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ProductSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
         props.put(ProducerConfig.RETRIES_CONFIG, "2");
         props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
         props.put(ProducerConfig.ACKS_CONFIG, "all");
@@ -37,12 +31,12 @@ public class ProductProducer {
     }
 
     @Bean
-    public ProducerFactory<Product, Integer> productProducerFactory() {
-        return new DefaultKafkaProducerFactory<>(productProducerConfigs());
+    public ProducerFactory<Long, Object> customerProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(customerProducerConfigs());
     }
 
     @Bean
-    public KafkaTemplate<Product, Integer> productKafkaTemplate() {
-        return new KafkaTemplate<>(productProducerFactory());
+    public KafkaTemplate<Long, Object> customerKafkaTemplate() {
+        return new KafkaTemplate<>(customerProducerFactory());
     }
 }

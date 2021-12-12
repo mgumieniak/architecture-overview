@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.mgumieniak.architecture.models.OrderDTO.fromOrderDTO;
-import static com.mgumieniak.architecture.webapp.kafka.Topics.ORDERS;
+import static com.mgumieniak.architecture.webapp.kafka.topics.Topics.ORDERS;
 
 @Service
 @RequiredArgsConstructor
