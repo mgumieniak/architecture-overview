@@ -2,4 +2,3 @@ rootProject.name = 'architecture'
 
 include 'architecture-webapp'
 include 'architecture-models'
-include 'architecture-connectors'

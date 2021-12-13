@@ -1,15 +1,15 @@
 package com.mgumieniak.architecture.webapp.services.order.details;
 
-import com.mgumieniak.architecture.models.Order;
-import com.mgumieniak.architecture.models.OrderValidation;
+import com.mgumieniak.architecture.models.orders.Order;
+import com.mgumieniak.architecture.models.validations.OrderValidation;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import static com.mgumieniak.architecture.models.OrderValidationResult.FAIL;
-import static com.mgumieniak.architecture.models.OrderValidationResult.PASS;
-import static com.mgumieniak.architecture.models.OrderValidationType.ORDER_DETAILS_CHECK;
+import static com.mgumieniak.architecture.models.validations.OrderValidationResult.FAIL;
+import static com.mgumieniak.architecture.models.validations.OrderValidationResult.PASS;
+import static com.mgumieniak.architecture.models.validations.OrderValidationType.ORDER_DETAILS_CHECK;
 
 @Slf4j
 @Service

@@ -1,9 +1,9 @@
 package com.mgumieniak.architecture.webapp.services.fraud;
 
-import com.mgumieniak.architecture.models.Order;
-import com.mgumieniak.architecture.models.OrderState;
-import com.mgumieniak.architecture.models.OrderValidation;
-import com.mgumieniak.architecture.models.OrderValue;
+import com.mgumieniak.architecture.models.orders.Order;
+import com.mgumieniak.architecture.models.orders.OrderState;
+import com.mgumieniak.architecture.models.validations.OrderValidation;
+import com.mgumieniak.architecture.models.orders.OrderValue;
 import com.mgumieniak.architecture.webapp.kafka.topics.Topic;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +21,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
-import static com.mgumieniak.architecture.models.OrderValidationResult.FAIL;
-import static com.mgumieniak.architecture.models.OrderValidationResult.PASS;
-import static com.mgumieniak.architecture.models.OrderValidationType.FRAUD_CHECK;
+import static com.mgumieniak.architecture.models.validations.OrderValidationResult.FAIL;
+import static com.mgumieniak.architecture.models.validations.OrderValidationResult.PASS;
+import static com.mgumieniak.architecture.models.validations.OrderValidationType.FRAUD_CHECK;
 import static com.mgumieniak.architecture.webapp.kafka.Stores.DS_LATEST_ORDER_WITH_MONEY_SPENT;
 
 @Slf4j

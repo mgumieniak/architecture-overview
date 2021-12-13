@@ -2,7 +2,7 @@ package com.mgumieniak.architecture.webapp.services.email;
 
 import com.mgumieniak.architecture.models.Customer;
 import com.mgumieniak.architecture.models.Email;
-import com.mgumieniak.architecture.models.Order;
+import com.mgumieniak.architecture.models.orders.Order;
 import com.mgumieniak.architecture.models.Payment;
 import com.mgumieniak.architecture.webapp.kafka.topics.Topic;
 import lombok.NonNull;
@@ -13,7 +13,6 @@ import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.KeyValueStore;
-import org.apache.kafka.streams.state.SessionStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

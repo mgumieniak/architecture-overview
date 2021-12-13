@@ -1,6 +1,6 @@
 package com.mgumieniak.architecture.webapp.services.fraud;
 
-import com.mgumieniak.architecture.models.OrderValue;
+import com.mgumieniak.architecture.models.orders.OrderValue;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
 

@@ -1,11 +1,11 @@
-package com.mgumieniak.architecture.models;
+package com.mgumieniak.architecture.models.validations;
 
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 
-import static com.mgumieniak.architecture.models.OrderValidationResult.PASS;
-import static com.mgumieniak.architecture.models.OrderValidationResult.UNDEFINED;
+import static com.mgumieniak.architecture.models.validations.OrderValidationResult.PASS;
+import static com.mgumieniak.architecture.models.validations.OrderValidationResult.UNDEFINED;
 
 @Data
 @Builder

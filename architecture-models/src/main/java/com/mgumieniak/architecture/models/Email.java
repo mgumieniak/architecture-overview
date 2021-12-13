@@ -1,8 +1,8 @@
 package com.mgumieniak.architecture.models;
 
+import com.mgumieniak.architecture.models.orders.Order;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NonNull;
 
 import javax.annotation.CheckForNull;
 import javax.validation.constraints.NotNull;

@@ -2,7 +2,7 @@ package com.mgumieniak.architecture.webapp.services.email;
 
 import com.mgumieniak.architecture.models.Customer;
 import com.mgumieniak.architecture.models.Email;
-import com.mgumieniak.architecture.models.Order;
+import com.mgumieniak.architecture.models.orders.Order;
 import com.mgumieniak.architecture.models.Payment;
 import com.mgumieniak.architecture.webapp.BasicStreamTest;
 import com.mgumieniak.architecture.webapp.kafka.topics.Topic;

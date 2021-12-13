@@ -1,5 +1,6 @@
-package com.mgumieniak.architecture.models;
+package com.mgumieniak.architecture.models.orders;
 
+import com.mgumieniak.architecture.models.Timestamp;
 import com.mgumieniak.architecture.models.products.Product;
 import lombok.Builder;
 import lombok.Value;
@@ -8,7 +9,7 @@ import java.time.Instant;
 
 @Value
 @Builder
-public class Order implements Timestamp{
+public class Order implements Timestamp {
     String id;
     long customerId;
     OrderState state;

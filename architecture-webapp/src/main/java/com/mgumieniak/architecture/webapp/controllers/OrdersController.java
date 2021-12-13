@@ -1,6 +1,6 @@
 package com.mgumieniak.architecture.webapp.controllers;
 
-import com.mgumieniak.architecture.models.OrderDTO;
+import com.mgumieniak.architecture.models.orders.OrderDTO;
 import com.mgumieniak.architecture.webapp.services.order.OrderService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

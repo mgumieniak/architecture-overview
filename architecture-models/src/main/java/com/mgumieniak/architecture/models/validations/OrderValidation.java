@@ -1,4 +1,4 @@
-package com.mgumieniak.architecture.models;
+package com.mgumieniak.architecture.models.validations;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

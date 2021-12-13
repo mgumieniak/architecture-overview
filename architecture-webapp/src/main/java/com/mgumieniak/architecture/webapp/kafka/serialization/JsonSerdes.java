@@ -2,7 +2,11 @@ package com.mgumieniak.architecture.webapp.kafka.serialization;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mgumieniak.architecture.models.*;
+import com.mgumieniak.architecture.models.orders.Order;
+import com.mgumieniak.architecture.models.orders.OrderValue;
 import com.mgumieniak.architecture.models.products.Product;
+import com.mgumieniak.architecture.models.validations.OrderValidation;
+import com.mgumieniak.architecture.models.validations.OrderValidationResults;
 import lombok.AllArgsConstructor;
 import org.apache.kafka.common.serialization.Serde;
 import org.springframework.context.annotation.Bean;

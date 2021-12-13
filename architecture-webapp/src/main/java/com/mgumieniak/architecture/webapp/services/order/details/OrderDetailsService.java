@@ -1,8 +1,8 @@
 package com.mgumieniak.architecture.webapp.services.order.details;
 
-import com.mgumieniak.architecture.models.Order;
-import com.mgumieniak.architecture.models.OrderState;
-import com.mgumieniak.architecture.models.OrderValidation;
+import com.mgumieniak.architecture.models.orders.Order;
+import com.mgumieniak.architecture.models.orders.OrderState;
+import com.mgumieniak.architecture.models.validations.OrderValidation;
 import com.mgumieniak.architecture.webapp.kafka.topics.Topic;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package com.mgumieniak.architecture.webapp.services.inventory;
 
-import com.mgumieniak.architecture.models.Order;
-import com.mgumieniak.architecture.models.OrderValidation;
+import com.mgumieniak.architecture.models.orders.Order;
+import com.mgumieniak.architecture.models.validations.OrderValidation;
 import com.mgumieniak.architecture.models.products.Product;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -11,9 +11,9 @@ import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
 
-import static com.mgumieniak.architecture.models.OrderValidationResult.FAIL;
-import static com.mgumieniak.architecture.models.OrderValidationResult.PASS;
-import static com.mgumieniak.architecture.models.OrderValidationType.INVENTORY_CHECK;
+import static com.mgumieniak.architecture.models.validations.OrderValidationResult.FAIL;
+import static com.mgumieniak.architecture.models.validations.OrderValidationResult.PASS;
+import static com.mgumieniak.architecture.models.validations.OrderValidationType.INVENTORY_CHECK;
 import static com.mgumieniak.architecture.webapp.kafka.Stores.DS_RESERVED_STOCK_STORE_NAME;
 
 @Slf4j

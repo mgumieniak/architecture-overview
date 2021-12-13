@@ -1,7 +1,9 @@
 package com.mgumieniak.architecture.webapp.kafka.topics;
 
 import com.mgumieniak.architecture.models.*;
+import com.mgumieniak.architecture.models.orders.Order;
 import com.mgumieniak.architecture.models.products.Product;
+import com.mgumieniak.architecture.models.validations.OrderValidation;
 import com.mgumieniak.architecture.webapp.kafka.serialization.OrderTimestampExtractor;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;

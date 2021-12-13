@@ -1,7 +1,11 @@
 package com.mgumieniak.architecture.webapp;
 
-import com.mgumieniak.architecture.models.*;
+import com.mgumieniak.architecture.models.orders.Order;
+import com.mgumieniak.architecture.models.orders.OrderState;
 import com.mgumieniak.architecture.models.products.Product;
+import com.mgumieniak.architecture.models.validations.OrderValidation;
+import com.mgumieniak.architecture.models.validations.OrderValidationResult;
+import com.mgumieniak.architecture.models.validations.OrderValidationType;
 
 import java.time.Instant;
 

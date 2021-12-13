@@ -1,6 +1,11 @@
 package com.mgumieniak.architecture.webapp.services.validationAggregator;
 
-import com.mgumieniak.architecture.models.*;
+import com.mgumieniak.architecture.models.orders.Order;
+import com.mgumieniak.architecture.models.orders.OrderState;
+import com.mgumieniak.architecture.models.validations.OrderValidation;
+import com.mgumieniak.architecture.models.validations.OrderValidationResult;
+import com.mgumieniak.architecture.models.validations.OrderValidationResults;
+import com.mgumieniak.architecture.models.validations.OrderValidationType;
 import com.mgumieniak.architecture.webapp.BasicStreamTest;
 import com.mgumieniak.architecture.webapp.kafka.topics.Topic;
 import org.apache.kafka.common.serialization.Serde;
