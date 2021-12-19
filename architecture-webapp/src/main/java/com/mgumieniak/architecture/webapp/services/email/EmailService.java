@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
+import static com.mgumieniak.architecture.webapp.kafka.Stores.DS_CUSTOMERS_STORE;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -34,7 +36,7 @@ public class EmailService {
         final KStream<String, Payment> orderIdToPayment = builder.stream(paymentTopic.getName(), paymentTopic.getConsumed());
         final GlobalKTable<Long, Customer> customerIdToCustomer = builder
                 .globalTable(customerTopic.getName(),
-                        Materialized.<Long, Customer, KeyValueStore<Bytes, byte[]>>as("customerDS")
+                        Materialized.<Long, Customer, KeyValueStore<Bytes, byte[]>>as(DS_CUSTOMERS_STORE)
                                 .withKeySerde(customerTopic.getKSerde())
                                 .withValueSerde(customerTopic.getVSerde()));
 

@@ -1,0 +1,15 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    // PROJECTS
+    implementation project(':architecture-models')
+
+    // FEIGN
+    implementation "com.playtika.reactivefeign:feign-reactor-spring-cloud-starter:${feign_reactor_version}"
+}
+
+test {
+    useJUnitPlatform()
+}

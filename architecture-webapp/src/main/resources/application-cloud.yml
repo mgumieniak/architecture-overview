@@ -1,1 +1,4 @@
 
+feign:
+  clients:
+    order: order-service:8080

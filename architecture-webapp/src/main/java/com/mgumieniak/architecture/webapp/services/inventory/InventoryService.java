@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 
-import static com.mgumieniak.architecture.webapp.kafka.Stores.DS_RESERVED_STOCK_STORE_NAME;
+import static com.mgumieniak.architecture.webapp.kafka.Stores.DS_RESERVED_STOCK_STORE;
 
 @Slf4j
 @Service
@@ -32,7 +32,7 @@ public class InventoryService {
 
     public void createProductToReservedStocks(final @NonNull StreamsBuilder builder) {
         val productToAmountStore = Stores
-                .keyValueStoreBuilder(Stores.persistentKeyValueStore(DS_RESERVED_STOCK_STORE_NAME),
+                .keyValueStoreBuilder(Stores.persistentKeyValueStore(DS_RESERVED_STOCK_STORE),
                         productTopic.getKSerde(), Serdes.Long())
                 .withLoggingEnabled(new HashMap<>());
         builder.addStateStore(productToAmountStore);
@@ -57,7 +57,7 @@ public class InventoryService {
                 );
 
         productToOrderAndStockAmountInWarehouse
-                .transform(InventoryValidator::new, DS_RESERVED_STOCK_STORE_NAME)
+                .transform(InventoryValidator::new, DS_RESERVED_STOCK_STORE)
                 .to(orderValidationTopic.getName(), orderValidationTopic.getProduced());
     }
 }

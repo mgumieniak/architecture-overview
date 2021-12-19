@@ -1,7 +1,7 @@
-package com.mgumieniak.architecture.webapp.services.inventory;
+package com.mgumieniak.architecture.webapp.services;
 
 import com.mgumieniak.architecture.models.products.Product;
-import com.mgumieniak.architecture.models.products.ProductSupplyRequest;
+import com.mgumieniak.architecture.models.products.ProductDTO;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class ProductService {
     @Qualifier("productKafkaTemplate")
     private final KafkaTemplate<Product, Integer> kafkaTemplate;
 
-    public void add(@NonNull final ProductSupplyRequest productSupplyRequest) {
-        kafkaTemplate.send(WAREHOUSE_INVENTORY, productSupplyRequest.getProduct(), productSupplyRequest.getAmount());
+    public void add(@NonNull final ProductDTO productDTO) {
+        kafkaTemplate.send(WAREHOUSE_INVENTORY, productDTO.getProduct(), productDTO.getAmount());
     }
 }

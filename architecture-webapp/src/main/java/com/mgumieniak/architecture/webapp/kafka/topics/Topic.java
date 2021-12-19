@@ -21,7 +21,7 @@ public class Topic<K, V> {
     @NonNull
     Consumed<K, V> consumed;
 
-    @CheckForNull
+    @NonNull
     Serde<K> kSerde;
 
     @NonNull

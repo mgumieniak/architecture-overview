@@ -10,6 +10,7 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor;
+import org.apache.kafka.streams.state.HostInfo;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -21,10 +22,12 @@ import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.config.KafkaStreamsCustomizer;
+import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.streams.RecoveringDeserializationExceptionHandler;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +47,12 @@ public class StreamConfig {
 
     @Value("${state-dir}")
     private final String stateDir;
+
+    @Value("${server.host}")
+    private final String host;
+
+    @Value("${server.port}")
+    private final String port;
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     public KafkaStreamsConfiguration defaultKafkaStreamsConfig() {
@@ -71,6 +80,8 @@ public class StreamConfig {
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "20000");
         props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, "6000");
 
+        props.put(StreamsConfig.APPLICATION_SERVER_CONFIG, host + ":" + port);
+
         return new KafkaStreamsConfiguration(props);
     }
 
@@ -82,4 +93,10 @@ public class StreamConfig {
                         kafkaStreams -> kafkaStreams.setUncaughtExceptionHandler(uncaughtExceptionHandler)
                 );
     }
+
+    @Bean
+    HostInfo getHostInfo(){
+        return new HostInfo(host, Integer.parseInt(port));
+    }
+
 }

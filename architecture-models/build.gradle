@@ -3,8 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation "com.web:common-rest:${common_rest_version}"
-
     implementation "javax.validation:validation-api:2.0.1.Final"
 }
 

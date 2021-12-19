@@ -14,7 +14,7 @@ import org.apache.kafka.streams.state.KeyValueStore;
 import static com.mgumieniak.architecture.models.validations.OrderValidationResult.FAIL;
 import static com.mgumieniak.architecture.models.validations.OrderValidationResult.PASS;
 import static com.mgumieniak.architecture.models.validations.OrderValidationType.INVENTORY_CHECK;
-import static com.mgumieniak.architecture.webapp.kafka.Stores.DS_RESERVED_STOCK_STORE_NAME;
+import static com.mgumieniak.architecture.webapp.kafka.Stores.DS_RESERVED_STOCK_STORE;
 
 @Slf4j
 public class InventoryValidator implements Transformer<Product, KeyValue<Order, Integer>, KeyValue<String, OrderValidation>> {
@@ -23,7 +23,7 @@ public class InventoryValidator implements Transformer<Product, KeyValue<Order, 
 
     @Override
     public void init(final ProcessorContext context) {
-        reservedStocksStore = context.getStateStore(DS_RESERVED_STOCK_STORE_NAME);
+        reservedStocksStore = context.getStateStore(DS_RESERVED_STOCK_STORE);
     }
 
     @Override

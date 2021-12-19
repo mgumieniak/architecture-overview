@@ -6,7 +6,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class ProductSupplyRequest {
+public class ProductDTO {
     @NonNull
     Product product;
 
