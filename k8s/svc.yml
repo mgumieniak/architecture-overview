@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: architecture
+  name: architecture-svc
 spec:
   type: ClusterIP
   selector:

@@ -3,3 +3,7 @@ server:
   port: 8088
 
 state-dir: /tmp/test-app
+
+feign:
+  clients:
+    order: localhost:8088

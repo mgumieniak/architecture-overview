@@ -1,4 +1,20 @@
+spring:
+  kafka:
+    bootstrap-servers: kafka.default.svc.cluster.local:9092
+    producer:
+      bootstrap-servers: kafka.default.svc.cluster.local:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    streams:
+      application-id: cloud-app
+      bootstrap-servers: kafka.default.svc.cluster.local:9092
 
 feign:
   clients:
-    order: order-service:8080
+    order: architecture-svc:8080
+
+server:
+  host: "${POD_IP}"
+  port: 8080
+
+state-dir: '/usr/rocksdb/stateStore'

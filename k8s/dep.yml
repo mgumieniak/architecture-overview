@@ -1,12 +1,13 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: architecture
+  name: architecture-sts
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: architecture
+  serviceName: architecture
+  replicas: 2
   template:
     metadata:
       labels:
@@ -14,32 +15,52 @@ spec:
     spec:
       containers:
       - name: architecture
-        image: maciejgum/Arch:latest
-        imagePullPolicy: Always
+        image: maciejgum/arch:latest
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
         envFrom:
           - configMapRef:
               name: architecture-env
-          - secretRef:
-              name: architecture-sec
-
-        resources:
-          limits:
-            {}
-
-        ports:
-        - containerPort: 8080
-
+        volumeMounts:
+        - name: rocksdb
+          mountPath: /usr/rocksdb
+        
         readinessProbe:
           httpGet:
             path: /actuator/health
             port: 8080
-          initialDelaySeconds: 30
+          initialDelaySeconds: 50
           periodSeconds: 15
 
         livenessProbe:
           httpGet:
             path: /actuator/health
             port: 8080
-          initialDelaySeconds: 40
+          initialDelaySeconds: 50
           periodSeconds: 15
+
+#      affinity:
+#        podAntiAffinity:
+#          requiredDuringSchedulingIgnoredDuringExecution:
+#            - labelSelector:
+#                matchExpressions:
+#                  - key: app
+#                    operator: In
+#                    values:
+#                      - "orders-view-app"
+#              topologyKey: "kubernetes.io/hostname"
           
+  volumeClaimTemplates:
+  - metadata:
+      name: rocksdb
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi

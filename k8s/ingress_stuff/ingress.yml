@@ -7,17 +7,21 @@ metadata:
   annotations:
     kubernetes.io/ingress.global-static-ip-name: static-external-ip
     networking.gke.io/v1beta1.FrontendConfig: fronted-config-for-ing
-    networking.gke.io/managed-certificates: MY_DOMAIN-mc
+    networking.gke.io/managed-certificates: my-owncloud.xyz-mc
     kubernetes.io/ingress.class: "gce"
 spec:
   rules:
-    - host: MY_DOMAIN
-      http:
+    - http:
         paths:
         - path: /*
           pathType: ImplementationSpecific
           backend:
             service:
-              name: architecture
+              name: architecture-svc
               port:
                 number: 8080
+  defaultBackend:
+   service:
+     name:  architecture-svc
+     port:
+       number: 8080

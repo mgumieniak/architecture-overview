@@ -22,11 +22,9 @@ dependencies {
     // FEIGN
     implementation "com.playtika.reactivefeign:feign-reactor-spring-cloud-starter:${feign_reactor_version}"
 
-
     //KAFKA
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.apache.kafka:kafka-streams'
-
 
     // TEST
     testImplementation 'org.springframework.kafka:spring-kafka-test'

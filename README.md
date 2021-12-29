@@ -49,3 +49,17 @@ Project was created based on https://github.com/confluentinc/kafka-streams-examp
 
 
 * Sharing Data across services via events
+
+
+## Installation
+Project can be deployed on k8s (folder k8s).
+1. Create infracture on GKE via terraform: https://github.com/mgumieniak/gke-template-cluster
+2. Deploy objects on k8s via `/k8s/dep.sh`
+
+Use port-forwarding or create ingress.
+
+#### Ingress
+1. Reserve static-ip 
+2. Buy domain: https://www.namecheap.com/. 
+   Configure bought domain with ip-address.
+3. Deploy objects in ingress_stuff to k8 

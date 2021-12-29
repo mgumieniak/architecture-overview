@@ -54,8 +54,10 @@ public class StreamConfig {
     @Value("${server.port}")
     private final String port;
 
+
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     public KafkaStreamsConfiguration defaultKafkaStreamsConfig() {
+        log.info("INSIDE defaultKafkaStreamsConfig: stateDir: {}, host: {}, port: {}", stateDir, host, port);
         Map<String, Object> props = new HashMap<>(kafkaProperties.buildStreamsProperties());
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "architecture-def-stream");
         props.put(StreamsConfig.CLIENT_ID_CONFIG, "architecture-def-stream-client");

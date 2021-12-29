@@ -1,12 +1,14 @@
 spring:
   kafka:
+    bootstrap-servers: localhost:9095
     producer:
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: localhost:9095
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     streams:
       application-id: dev-app
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: localhost:9095
+
 
 state-dir: '/home/maciej/Public/Kafka/data'
 
